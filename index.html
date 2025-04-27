@@ -1,23 +1,350 @@
 <!DOCTYPE html>
-<html>
+<html lang="cs">
 <head>
+  <meta charset="UTF-8">
   <title>Verniker Schematics</title>
   <style>
     body {
-      background-color: black;
-      color: lime;
-      font-family: monospace;
+      font-family: 'Segoe UI', sans-serif;
+      background: #fdfdfd;
+      margin: 0;
+      padding: 0;
+      color: #222;
+      transition: background 0.5s, color 0.5s;
+    }
+    header {
+      background: linear-gradient(90deg, #bbdefb, #f8bbd0);
+      text-align: center;
+      padding: 60px 20px;
+      position: relative;
+    }
+    header h1 {
+      font-size: 44px;
+      color: #0d47a1;
+    }
+    header p {
+      font-size: 18px;
+      color: #555;
+      margin-top: 10px;
+    }
+    .nav-icons {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      display: flex;
+      gap: 10px;
+    }
+    .nav-icons button {
+      background: none;
+      border: none;
+      font-size: 26px;
+      color: inherit;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+    .nav-icons button:hover {
+      transform: scale(1.3);
+    }
+    #toggle-theme {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: none;
+      border: none;
+      font-size: 30px;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+      color: inherit;
+    }
+    #toggle-theme:hover {
+      transform: rotate(45deg);
+    }
+    main {
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+    h2 {
+      color: #1976d2;
+      border-bottom: 2px solid #bbdefb;
+      padding-bottom: 5px;
+      margin-bottom: 20px;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .schematic-item {
+      background: #ffffff;
+      border-left: 6px solid #f8bbd0;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
       padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.2s ease;
+    }
+    .schematic-item:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    }
+    .download-btn {
+      background: #2196f3;
+      color: white;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+    .download-btn:hover {
+      background: #1976d2;
+    }
+    .popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #ffffff;
+      padding: 20px 30px;
+      border: none;
+      border-radius: 24px;
+      box-shadow: 0 0 20px 4px #bbdefb, 0 0 30px 8px #f8bbd0;
+      font-size: 18px;
+      color: #444;
+      z-index: 9999;
+      opacity: 0;
+      animation: fadeIn 0.5s ease forwards;
+      overflow: hidden;
+      background-clip: padding-box;
+    }
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translate(-50%, -60%);}
+      to {opacity: 1; transform: translate(-50%, -50%);}
+    }
+    @keyframes fadeOut {
+      from {opacity: 1; transform: translate(-50%, -50%);}
+      to {opacity: 0; transform: translate(-50%, -60%);}
+    }
+    .counter {
+      margin-top: 30px;
+      font-size: 16px;
+      color: #555;
+    }
+    .legal {
+      margin-top: 60px;
+      padding: 20px;
+      background: linear-gradient(90deg, #bbdefb, #f8bbd0);
+      color: #4a0072;
+      border-radius: 12px;
+      font-size: 15px;
+      line-height: 1.6;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    footer {
+      text-align: center;
+      margin-top: 80px;
+      padding: 20px;
+      background: #f1f1f1;
+      font-size: 14px;
+      color: #888;
+      position: relative;
+    }
+    .social-icons {
+      margin-top: 10px;
+    }
+    .social-icons a {
+      margin: 0 8px;
+      text-decoration: none;
+      font-size: 28px;
+      display: inline-block;
+      color: #555;
+      transition: all 0.4s ease;
+    }
+    .social-icons a:hover {
+      transform: scale(1.5);
+    }
+    .social-icons a i {
+      transition: all 0.4s ease;
+    }
+    .social-icons a:hover i {
+      background: linear-gradient(90deg, #2196f3, #e91e63);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .donate-btn {
+      display: inline-block;
+      margin-top: 20px;
+      background: linear-gradient(90deg, #2196f3, #e91e63);
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .donate-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 20px rgba(233,30,99,0.5);
+    }
+    body.dark-mode {
+      background: #121212;
+      color: #ddd;
+    }
+    body.dark-mode header {
+      background: linear-gradient(90deg, #3949ab, #d81b60);
+    }
+    body.dark-mode header h1 {
+      color: #bbdefb;
+    }
+    body.dark-mode header p {
+      color: #ccc;
+    }
+    body.dark-mode main {
+      color: #ddd;
+    }
+    body.dark-mode .schematic-item {
+      background: #1e1e1e;
+      border-left: 6px solid #d81b60;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    }
+    body.dark-mode .download-btn {
+      background: #3949ab;
+    }
+    body.dark-mode .download-btn:hover {
+      background: #303f9f;
+    }
+    body.dark-mode .popup {
+      background: #1e1e1e;
+      color: #eee;
+    }
+    body.dark-mode .legal {
+      background: linear-gradient(90deg, #3949ab, #d81b60);
+      color: #f8bbd0;
+    }
+    body.dark-mode footer {
+      background: #1a1a1a;
+      color: #aaa;
+    }
+    body.dark-mode .social-icons a {
+      color: #bbb;
     }
   </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-  <h1>Vítej na VernikerSchematics!</h1>
-  <p>Systém je připojen. Skenuji zařízení...</p>
-  <script>
+
+<header>
+  <div class="nav-icons">
+    <button onclick="showHome()" title="Domů"><i class="fas fa-home"></i></button>
+    <button onclick="showStats()" title="Statistiky"><i class="fas fa-chart-bar"></i></button>
+  </div>
+
+  <h1>Verniker Schematics</h1>
+  <p>Originální Create schémata pro Minecraft. Užij si je zdarma!</p>
+
+  <button id="toggle-theme">
+    <i class="fas fa-sun"></i>
+  </button>
+</header>
+
+<main>
+  <section id="home">
+    <h2>Ke stažení</h2>
+    <ul>
+      <li class="schematic-item">
+        <span>flying_machine.nbt</span>
+        <a href="schematics/flying_machine.nbt" class="download-btn" download onclick="downloadFile('Flying Machine')">Stáhnout</a>
+      </li>
+      <li class="schematic-item">
+        <span>gearbox_system.nbt</span>
+        <a href="schematics/gearbox_system.nbt" class="download-btn" download onclick="downloadFile('Gearbox System')">Stáhnout</a>
+      </li>
+      <li class="schematic-item">
+        <span>piston_looper.nbt</span>
+        <a href="schematics/piston_looper.nbt" class="download-btn" download onclick="downloadFile('Piston Looper')">Stáhnout</a>
+      </li>
+      <li class="schematic-item">
+        <span>special_prank.nbt</span>
+        <a href="schematics/special_prank.nbt" class="download-btn" download onclick="downloadFile('Special Prank')">Stáhnout</a>
+      </li>
+    </ul>
+    <div class="counter">
+      📥 Staženo souborů celkem: <span id="counter">0</span>
+    </div>
+  </section>
+
+  <section id="stats" style="display:none;">
+    <h2>Statistiky</h2>
+    <p>📥 Celkový počet stažení: <span id="counter">0</span></p>
+    <p>🚀 Děkujeme za podporu!</p>
+  </section>
+
+  <section class="legal">
+    ⚠️ Tento obsah je určen pouze pro osobní použití.<br>
+    Kopírování, úpravy nebo komerční využití bez svolení autora je zakázáno.<br><br>
+    © Verniker Schematics 2025
+  </section>
+</main>
+
+<footer>
+  Vytvořeno Vernikerem – VernSchem
+  <div class="social-icons">
+    <a href="mailto:verniker@example.com" title="Email"><i class="fas fa-envelope"></i></a>
+    <a href="https://www.instagram.com/zajda_257/" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
+  </div>
+  <a href="https://buymeacoffee.com/verniker" target="_blank" class="donate-btn">Podpořit mě ☕</a>
+</footer>
+
+<div id="popup" class="popup"></div>
+
+<script>
+  let count = parseInt(localStorage.getItem('downloads')) || 0;
+  document.querySelectorAll('#counter').forEach(el => el.textContent = count);
+
+  function downloadFile(name) {
+    const popup = document.getElementById('popup');
+    popup.innerText = `Děkujeme za stažení: ${name}!`;
+    popup.style.display = 'block';
+    popup.style.animation = 'fadeIn 0.5s ease forwards';
     setTimeout(() => {
-      alert("Přístup získán. Verniker převzal kontrolu.");
-    }, 3000);
-  </script>
+      popup.style.animation = 'fadeOut 0.5s ease forwards';
+      setTimeout(() => popup.style.display = 'none', 500);
+    }, 2000);
+
+    count++;
+    localStorage.setItem('downloads', count);
+    document.querySelectorAll('#counter').forEach(el => el.textContent = count);
+  }
+
+  const toggleButton = document.getElementById('toggle-theme');
+  toggleButton.addEventListener('click', () => {
+    const body = document.body;
+    body.classList.toggle('dark-mode');
+    if (body.classList.contains('dark-mode')) {
+      toggleButton.innerHTML = '<i class="fas fa-moon"></i>';
+    } else {
+      toggleButton.innerHTML = '<i class="fas fa-sun"></i>';
+    }
+  });
+
+  function showHome() {
+    document.getElementById('home').style.display = 'block';
+    document.getElementById('stats').style.display = 'none';
+  }
+
+  function showStats() {
+    document.getElementById('home').style.display = 'none';
+    document.getElementById('stats').style.display = 'block';
+  }
+</script>
+
 </body>
 </html>
